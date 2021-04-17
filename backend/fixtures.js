@@ -1,7 +1,9 @@
 const dotenv = require('dotenv');
 const colors = require('colors');
 const users = require('./data/users');
+const products = require('./data/products');
 const User = require('./models/User');
+const Product = require('./models/Product');
 const connectDB = require('./db');
 dotenv.config();
 
@@ -10,7 +12,17 @@ connectDB();
 const importData = async () => {
   try {
     await User.deleteMany();
-    await User.insertMany(users);
+    await Product.deleteMany();
+
+    const createdUsers = await User.insertMany(users);
+
+    const adminUser = createdUsers[0]._id;
+
+    const sampleProducts = products.map((product) => {
+      return { ...product, user: adminUser };
+    });
+
+    await Product.insertMany(sampleProducts);
 
     console.log('Data Imported!'.green.inverse);
     process.exit();
@@ -23,6 +35,7 @@ const importData = async () => {
 const destroyData = async () => {
   try {
     await User.deleteMany();
+    await Product.deleteMany();
 
     console.log('Data Destroyed!'.red.inverse);
     process.exit();
