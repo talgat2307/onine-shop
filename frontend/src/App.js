@@ -8,6 +8,8 @@ import Products from './containers/Products';
 import ProductDetails from './containers/ProductDetails';
 import ProductCreate from './containers/ProductCreate';
 import ProductEdit from './containers/ProductEdit';
+import Checkout from './containers/Checkout';
+import Orders from './containers/Orders';
 
 const ProtectedRoute = ({ isAllowed, redirectTo, ...props }) => {
   return isAllowed ? <Route {...props}/> : <Redirect to={redirectTo}/>;
@@ -34,6 +36,12 @@ const App = () => {
             path={'/admin/product/:id/edit'}
             exact
             component={ProductEdit}
+            isAllowed={user && user.role === 'admin'}
+            redirectTo={'/'}/>
+          <ProtectedRoute path={'/checkout/:id'} component={Checkout} isAllowed={user} redirectTo={'/login'}/>
+          <ProtectedRoute
+            path={'/admin/orders'}
+            component={Orders}
             isAllowed={user && user.role === 'admin'}
             redirectTo={'/'}/>
         </Switch>
