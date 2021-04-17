@@ -5,7 +5,7 @@ const permit = require('../middlewares/permit');
 
 router.get('/', [auth, permit('admin')], async (req, res) => {
   try {
-    const orders = await Order.find().populate('user', 'id name');
+    const orders = await Order.find().populate('user');
     res.send(orders);
   } catch (e) {
     res.status(404).send(e);
@@ -32,6 +32,7 @@ router.post('/:id', [auth], async (req, res) => {
       });
 
       const createdOrder = await order.save();
+      console.log(createdOrder);
       res.send(createdOrder);
     } catch (e) {
       res.status(400).send(e);
