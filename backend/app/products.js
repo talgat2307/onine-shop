@@ -70,6 +70,33 @@ router.post('/:id/reviews', [auth], async (req, res) => {
   }
 });
 
+router.put('/ordered/:id', [auth], async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (product.countInStock !== 0) {
+      product.countInStock = product.countInStock - 1;
+      await product.save();
+      res.send({ message: 'Product has been ordered' });
+    }
+  } catch (e) {
+    res.status(404).send(e);
+  }
+});
+
+router.put('/canceled/:id', [auth], async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    console.log(product);
+    if (product.countInStock !== 0) {
+      product.countInStock = product.countInStock + 1;
+      await product.save();
+      res.send({ message: 'Order has been canceled' });
+    }
+  } catch (e) {
+    res.status(404).send(e);
+  }
+});
+
 router.put('/:id', [auth, permit('admin'), upload.single('image')], async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -104,6 +131,18 @@ router.delete('/:id/review', [auth], async (req, res) => {
   try {
     await Product.updateOne({ _id: req.params.id },
       { '$pull': { 'reviews': { 'user': req.user._id.toString() } } });
+    res.send({ message: 'Review has been successfully deleted' });
+  } catch (e) {
+    res.status(400).send({ error: 'Product not found' });
+  }
+});
+
+router.delete('/:id/user-reviews',[auth, permit('admin')], async (req, res) => {
+  try {
+    let query;
+    if (req.query.review) query = { review: req.query.review };
+    await Product.updateOne({ _id: req.params.id },
+      { '$pull': { 'reviews': { '_id': query.review } } });
     res.send({ message: 'Review has been successfully deleted' });
   } catch (e) {
     res.status(400).send({ error: 'Product not found' });

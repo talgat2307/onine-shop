@@ -1,4 +1,5 @@
 import {
+  DELETE_REVIEW_SUCCESS,
   PRODUCT_ADD_REVIEW_FAIL,
   PRODUCT_ADD_REVIEW_REQUEST,
   PRODUCT_ADD_REVIEW_RESET,
@@ -61,7 +62,9 @@ export const productDetailsReducer = (state = productDetailsState, action) => {
     case PRODUCT_DETAILS_FAIL:
       return { ...state, loading: false, error: action.error };
     case PRODUCT_REVIEW_DELETE_SUCCESS:
-      return { ...state, success: true }
+      return { ...state, success: true };
+    case DELETE_REVIEW_SUCCESS:
+      return { ...state, success: true };
     default:
       return state;
   }

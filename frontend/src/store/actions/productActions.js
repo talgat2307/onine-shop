@@ -1,4 +1,6 @@
 import {
+  DELETE_REVIEW_FAIL,
+  DELETE_REVIEW_REQUEST, DELETE_REVIEW_SUCCESS,
   PRODUCT_ADD_REVIEW_FAIL,
   PRODUCT_ADD_REVIEW_REQUEST,
   PRODUCT_ADD_REVIEW_SUCCESS,
@@ -13,8 +15,13 @@ import {
   PRODUCT_DETAILS_SUCCESS,
   PRODUCT_LIST_FAIL,
   PRODUCT_LIST_REQUEST,
-  PRODUCT_LIST_SUCCESS, PRODUCT_REVIEW_DELETE_FAIL,
-  PRODUCT_REVIEW_DELETE_REQUEST, PRODUCT_REVIEW_DELETE_SUCCESS,
+  PRODUCT_LIST_SUCCESS, PRODUCT_ORDER_CANCEL_FAIL, PRODUCT_ORDER_CANCEL_REQUEST, PRODUCT_ORDER_CANCEL_SUCCESS,
+  PRODUCT_REVIEW_DELETE_FAIL,
+  PRODUCT_REVIEW_DELETE_REQUEST,
+  PRODUCT_REVIEW_DELETE_SUCCESS,
+  PRODUCT_SOLD_FAIL,
+  PRODUCT_SOLD_REQUEST,
+  PRODUCT_SOLD_SUCCESS,
   PRODUCT_UPDATE_FAIL,
   PRODUCT_UPDATE_REQUEST,
   PRODUCT_UPDATE_SUCCESS,
@@ -49,6 +56,18 @@ const productAddReviewFail = error => ({ type: PRODUCT_ADD_REVIEW_FAIL, error })
 const productReviewDeleteRequest = () => ({ type: PRODUCT_REVIEW_DELETE_REQUEST });
 const productReviewDeleteSuccess = userId => ({ type: PRODUCT_REVIEW_DELETE_SUCCESS, userId });
 const productReviewDeleteFail = error => ({ type: PRODUCT_REVIEW_DELETE_FAIL, error });
+
+const deleteReviewRequest = () => ({ type: DELETE_REVIEW_REQUEST });
+const deleteReviewSuccess = () => ({ type: DELETE_REVIEW_SUCCESS });
+const deleteReviewFail = error => ({ type: DELETE_REVIEW_FAIL, error });
+
+const productSoldRequest = () => ({ type: PRODUCT_SOLD_REQUEST });
+const productSoldSuccess = () => ({ type: PRODUCT_SOLD_SUCCESS });
+const productSoldFail = error => ({ type: PRODUCT_SOLD_FAIL, error });
+
+const productOrderCancelRequest = () => ({ type: PRODUCT_ORDER_CANCEL_REQUEST });
+const productOrderCancelSuccess = (id) => ({ type: PRODUCT_ORDER_CANCEL_SUCCESS, id });
+const productOrderCancelFail = error => ({ type: PRODUCT_ORDER_CANCEL_FAIL, error });
 
 export const getProductList = () => {
   return async dispatch => {
@@ -149,6 +168,48 @@ export const deleteReview = (id, userId) => {
           ? e.response.data.error
           : e.message,
       ));
+    }
+  };
+};
+
+export const deleteReviewByAdmin = (id, reviewId) => {
+  return async dispatch => {
+    dispatch(deleteReviewRequest());
+    try {
+      await axiosApi.delete(`/products/${id}/user-reviews?review=${reviewId}`);
+      dispatch(deleteReviewSuccess());
+    } catch (e) {
+      dispatch(deleteReviewFail(e.response && e.response.data.error
+        ? e.response.data.error
+        : e.message));
+    }
+  };
+};
+
+export const productSold = (id) => {
+  return async dispatch => {
+    dispatch(productSoldRequest());
+    try {
+      await axiosApi.put(`/products/ordered/${id}`, {});
+      dispatch(productSoldSuccess());
+    } catch (e) {
+      dispatch(productSoldFail(e.response && e.response.data.error
+        ? e.response.data.error
+        : e.message));
+    }
+  };
+};
+
+export const productOrderCancel = (id) => {
+  return async dispatch => {
+    dispatch(productOrderCancelRequest());
+    try {
+      await axiosApi.put(`/products/canceled/${id}`, {});
+      dispatch(productOrderCancelSuccess());
+    } catch (e) {
+      dispatch(productOrderCancelFail(e.response && e.response.data.error
+        ? e.response.data.error
+        : e.message));
     }
   };
 };

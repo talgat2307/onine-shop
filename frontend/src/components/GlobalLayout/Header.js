@@ -103,7 +103,7 @@ const Header = () => {
                     <Box>
                       <MenuItem
                         component={Link}
-                        to={'/orders'}
+                        to={'/admin/orders'}
                         className={classes.menuItem}
                         onClick={handleClose}
                       >Orders</MenuItem>

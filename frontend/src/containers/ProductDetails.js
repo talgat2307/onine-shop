@@ -13,7 +13,13 @@ import {
 import Ratings from '../components/Ratings';
 import { useDispatch, useSelector } from 'react-redux';
 import Loader from '../components/Loader';
-import { addProductReview, deleteProduct, deleteReview, getProductDetails } from '../store/actions/productActions';
+import {
+  addProductReview,
+  deleteProduct,
+  deleteReview,
+  deleteReviewByAdmin,
+  getProductDetails,
+} from '../store/actions/productActions';
 import { imageUrl } from '../constants';
 import { Alert } from '@material-ui/lab';
 import { PRODUCT_ADD_REVIEW_RESET } from '../store/constants/productConstants';
@@ -154,7 +160,7 @@ const ProductDetails = ({ match, history }) => {
   }, [dispatch]);
 
   const checkoutHandler = () => {
-    history.push('/login?redirect=checkout');
+    history.push(`/login?redirect=checkout/${productId}`);
   };
 
   const productDeleteHandler = (id) => {
@@ -194,7 +200,7 @@ const ProductDetails = ({ match, history }) => {
     <>
       <div className={classes.productHeader}>
         <Button variant="outlined" component={Link} to={'/'}>
-          Go Back
+          Go to Main page
         </Button>
         {userInfo && userInfo.role === 'admin' && <div className={classes.controllers}>
           <Button
@@ -288,7 +294,15 @@ const ProductDetails = ({ match, history }) => {
                     <Button
                       onClick={reviewDeleteHandler}
                       className={classes.deleteReview}
-                      variant={'contained'}
+                      variant={'outlined'}
+                      color={'secondary'}
+                    >
+                      Delete
+                    </Button>}
+                    {userInfo && userInfo.role === 'admin' && <Button
+                      onClick={() => dispatch(deleteReviewByAdmin(productId, review._id))}
+                      className={classes.deleteReview}
+                      variant={'outlined'}
                       color={'secondary'}
                     >
                       Delete
