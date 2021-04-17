@@ -32,7 +32,6 @@ router.post('/:id', [auth], async (req, res) => {
       });
 
       const createdOrder = await order.save();
-      console.log(createdOrder);
       res.send(createdOrder);
     } catch (e) {
       res.status(400).send(e);
