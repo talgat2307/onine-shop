@@ -75,11 +75,9 @@ router.put('/:id', [auth, permit('admin'), upload.single('image')], async (req, 
     const product = await Product.findById(req.params.id);
 
     if (product) {
-      product.name = req.body.name || product.name;
+      product.title = req.body.title || product.title;
       product.price = req.body.price || product.price;
       product.description = req.body.description || product.description;
-      product.brand = req.body.brand || product.brand;
-      product.category = req.body.category || product.category;
       product.countInStock = req.body.countInStock || product.countInStock;
     }
     if (req.file) product.image = req.file.filename || product.image;
@@ -97,6 +95,16 @@ router.delete('/:id', [auth, permit('admin')], async (req, res) => {
     const product = await Product.findById(req.params.id);
     await product.remove();
     res.send({ message: 'Product removed' });
+  } catch (e) {
+    res.status(400).send({ error: 'Product not found' });
+  }
+});
+
+router.delete('/:id/review', [auth], async (req, res) => {
+  try {
+    await Product.updateOne({ _id: req.params.id },
+      { '$pull': { 'reviews': { 'user': req.user._id.toString() } } });
+    res.send({ message: 'Review has been successfully deleted' });
   } catch (e) {
     res.status(400).send({ error: 'Product not found' });
   }
